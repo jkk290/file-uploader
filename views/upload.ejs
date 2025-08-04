@@ -6,10 +6,10 @@
     <title><%= title %></title>
 </head>
 <body>
-    <form action="/logout" method="POST">
-        <button type="submit">Log out</button>
-    </form>
-    <a href="/upload/add">Upload File</a>
     <h1><%= title %></h1>
+    <form action="/upload/add" method="post" enctype="multipart/form-data">
+        <input type="file" name="file" />
+        <button type="submit">Upload</button>
+    </form>
 </body>
 </html>

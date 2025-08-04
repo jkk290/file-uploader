@@ -5,10 +5,9 @@ const appController = require('../controllers/appController');
 const appRouter = Router();
 
 appRouter.get('/login', appController.loginGet);
-appRouter.post('/login', (req, res, next) => {
-    console.log('post router hit!');
-    next();
-}, appController.loginPost);
+appRouter.get('/upload/add', appController.uploadAddGet);
+appRouter.post('/login', appController.loginPost);
+appRouter.post('/upload/add', appController.uploadAddPost);
 appRouter.post('/logout', appController.logoutPost);
 appRouter.get('/', checkAuth, appController.getApp);
 
