@@ -16,10 +16,12 @@ datasource db {
 
 model User {
   id  Int @id @default(autoincrement())
-  firstName String?
-  lastName String?
+  firstName String
+  lastName String
   email String @unique
-  password String?
+  password String
+
+  Folder Folder[]
 }
 
 model Session {
@@ -27,5 +29,16 @@ model Session {
   sid String  @unique
   data String 
   expiresAt DateTime
+}
+
+model Folder {
+  id Int @id @default(autoincrement())
+  name String @db.VarChar(255)
+  owner User @relation(fields: [ownerId], references: [id])
+  ownerId Int
+  creationAt DateTime @default(now())
+  modifiedAt DateTime @updatedAt
+
+  @@unique([ownerId, name])
 }
 
