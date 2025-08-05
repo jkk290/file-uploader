@@ -22,6 +22,7 @@ model User {
   password String
 
   Folder Folder[]
+  File File[]
 }
 
 model Session {
@@ -34,11 +35,30 @@ model Session {
 model Folder {
   id Int @id @default(autoincrement())
   name String @db.VarChar(255)
+  isRoot Boolean @default(false)
   owner User @relation(fields: [ownerId], references: [id])
   ownerId Int
-  creationAt DateTime @default(now())
+  createdAt DateTime @default(now())
   modifiedAt DateTime @updatedAt
 
+  File File[]
+
   @@unique([ownerId, name])
+}
+
+model File {
+  id Int @id @default(autoincrement())
+  name String @db.VarChar(255)
+  size Int
+  fileType String
+  filePath String
+  createdAt DateTime @default(now())
+  modifiedAt DateTime @updatedAt
+  owner User @relation(fields: [ownerId], references: [id])
+  ownerId Int
+  folder Folder @relation(fields: [folderId], references: [id])
+  folderId Int
+
+  @@unique([name, folderId, ownerId])
 }
 
