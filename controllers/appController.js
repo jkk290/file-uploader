@@ -20,6 +20,16 @@ exports.loginGet = (req, res) => {
     });
 };
 
+exports.folderGet = async (req, res) => {
+    const folderId = parseInt(req.params.id);
+    const folder = await db.getFolderById(folderId);
+    const files = await db.getFilesByFolder(folderId);
+    res.render('folder', {
+        title: folder.name,
+        files: files
+    });
+};
+
 exports.folderAddGet = (req, res) => {
     res.render('newFolder', {
         title: 'New Folder'

@@ -14,13 +14,16 @@
     <h1><%= title %></h1>
     <ul>
         <% folders.forEach(folder => { %>
-            <li>Name: <%= folder.name %></li>
-            <form action="/folder/<%= folder.id %>/edit" method="get">
-                <button type="submit">Edit</button>
-            </form>
-            <form action="/folder/<%= folder.id %>/delete" method="post">
-                <button type="submit" onclick="return confirm('All files within this folder will be deleted.  Are you sure?');">Delete</button>
-            </form>
+            <% if (!folder.isRoot) { %>
+                <li>Name: <a href="/folder/<%= folder.id %>"><%= folder.name %></a>
+                    <form action="/folder/<%= folder.id %>/edit" method="get">
+                        <button type="submit">Edit</button>
+                    </form>
+                    <form action="/folder/<%= folder.id %>/delete" method="post">
+                        <button type="submit" onclick="return confirm('All files within this folder will be deleted.  Are you sure?');">Delete</button>
+                    </form>
+                </li>
+            <% } %>            
         <% }) %>
     </ul>
     <ul>

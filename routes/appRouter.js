@@ -10,6 +10,7 @@ appRouter.get('/login', appController.loginGet);
 appRouter.get('/upload/add',checkAuth, appController.uploadAddGet);
 appRouter.get('/folder/add',checkAuth, appController.folderAddGet);
 appRouter.get('/folder/:id/edit',checkAuth, appController.folderEditGet);
+appRouter.get('/folder/:id', appController.folderGet);
 appRouter.post('/folder/:id/edit',checkAuth, appController.folderEditPost);
 appRouter.post('/folder/:id/delete',checkAuth, appController.folderDeletePost);
 appRouter.post('/folder/add',checkAuth, appController.folderAddPost);
