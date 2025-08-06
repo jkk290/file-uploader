@@ -56,7 +56,7 @@ model File {
   modifiedAt DateTime? @updatedAt
   owner User @relation(fields: [ownerId], references: [id])
   ownerId Int
-  folder Folder @relation(fields: [folderId], references: [id])
+  folder Folder @relation(fields: [folderId], references: [id], onDelete: Cascade)
   folderId Int
 
   @@unique([name, folderId, ownerId])
