@@ -104,6 +104,14 @@ exports.uploadAddPost = async (req, res) => {
     res.redirect('/');
 };
 
+exports.fileGet = async (req, res) => {
+    const file = await db.getFileById(parseInt(req.params.id));
+    console.log('Viewing file...', file);
+    res.render('file', {
+        file: file
+    });
+};
+
 exports.fileEditGet = async (req, res) => {
     const file = await db.getFileById(parseInt(req.params.id));
     res.render('editFile', {

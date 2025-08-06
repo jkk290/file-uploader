@@ -11,6 +11,7 @@ appRouter.get('/upload/add', checkAuth, appController.uploadAddGet);
 appRouter.get('/folder/add', checkAuth, appController.folderAddGet);
 appRouter.get('/folder/:id/edit', checkAuth, appController.folderEditGet);
 appRouter.get('/file/:id/edit', checkAuth, appController.fileEditGet);
+appRouter.get('/file/:id', checkAuth, appController.fileGet);
 appRouter.get('/folder/:id', checkAuth, appController.folderGet);
 appRouter.post('/folder/:id/edit', checkAuth, appController.folderEditPost);
 appRouter.post('/folder/:id/delete', checkAuth, appController.folderDeletePost);

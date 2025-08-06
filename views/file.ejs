@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= file.name %></title>
+</head>
+<body>
+    <a href="/">Back</a>
+    <h1><%= file.name %></h1>
+    <p>Size: <%= file.size %></p>
+    <p>Type: <%= file.fileType %></p>
+    <p>Uploaded at: <%= file.createdAt %></p>
+    <form action="/file/<%= file.id %>/edit" method="get">
+        <button type="submit">Rename</button>
+    </form>
+    <form action="/file/<%= file.id %>/delete" method="post">
+        <button type="submit" onclick="return confirm('This file will be deleted.  Are you sure?');">Delete</button>
+    </form>
+</body>
+</html>
