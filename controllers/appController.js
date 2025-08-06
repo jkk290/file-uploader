@@ -6,9 +6,11 @@ const convertSize = require('../utils/convertSize');
 exports.getApp = async (req, res) => {
     const user = req.user;
     const folders = await db.getFolders(user.id);
+    const rootFiles = await db.getRootFiles(user.id);
     res.render('app', {
         title: 'My Files',
-        folders: folders
+        folders: folders,
+        files: rootFiles
     });
 };
 
@@ -74,7 +76,7 @@ exports.uploadAddPost = async (req, res) => {
             return folder.id;
         } else {
             console.log('Folder is not root...', fileFolder)
-            return fileFolder;
+            return parseInt(fileFolder);
         }
     };
 

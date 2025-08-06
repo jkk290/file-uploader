@@ -108,6 +108,18 @@ async function getUserFiles(userId) {
     return files;
 };
 
+async function getRootFiles(userId) {
+    const files = await prisma.file.findMany({
+        where: {
+            ownerId: userId,
+            folder: {
+                isRoot: true
+            }
+        },
+    });
+    return files;
+};
+
 async function getFileById(id) {
     const file = await prisma.file.findUnique({
         where: {
@@ -158,6 +170,7 @@ module.exports = {
     deleteFolder,
     getUserFiles,
     getFileById,
+    getRootFiles,
     addFile,
     editFile,
     deleteFile
