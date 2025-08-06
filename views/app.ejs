@@ -9,9 +9,9 @@
     <form action="/logout" method="POST">
         <button type="submit">Log out</button>
     </form>
+    <h1><%= title %></h1>    
     <a href="/upload/add">Upload File</a>
     <a href="/folder/add">New Folder</a>
-    <h1><%= title %></h1>
     <ul>
         <% folders.forEach(folder => { %>
             <% if (!folder.isRoot) { %>
@@ -28,7 +28,14 @@
     </ul>
     <ul>
         <% files.forEach(file => { %>
-            <li>File Name: <%= file.name %></li>
+            <li>File Name: <a href="/file/<%= file.id %>"><%= file.name %></a>
+                <form action="/file/<%= file.id %>/edit" method="get">
+                    <button type="submit">Rename</button>
+                </form>
+                <form action="/file/<%= file.id %>/delete" method="post">
+                    <button type="submit" onclick="return confirm('This file will be deleted.  Are you sure?');">Delete</button>
+                </form>
+            </li>
         <% }) %>
     </ul>
 </body>

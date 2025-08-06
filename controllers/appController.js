@@ -104,6 +104,25 @@ exports.uploadAddPost = async (req, res) => {
     res.redirect('/');
 };
 
+exports.fileEditGet = async (req, res) => {
+    const file = await db.getFileById(parseInt(req.params.id));
+    res.render('editFile', {
+        title: 'Edit File',
+        file: file
+    });
+};
+
+exports.fileEditPost = async (req, res) => {
+    const fileName = req.body.fileName;
+    await db.editFile(parseInt(req.params.id), fileName);
+    res.redirect('/');
+};
+
+exports.fileDeletePost = async (req, res) => {
+    await db.deleteFile(parseInt(req.params.id));
+    res.redirect('/');
+};
+
 exports.loginPost = passport.authenticate('local', {
     successRedirect: '/',
     failureRedirect: '/login'

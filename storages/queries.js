@@ -135,6 +135,7 @@ async function getFileById(id) {
             id: id
         }
     });
+    return file;
 };
 
 async function addFile(file) {
