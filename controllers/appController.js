@@ -1,5 +1,7 @@
 const passport = require("passport");
 const db = require('../storages/queries');
+const stripExtension = require('../utils/stripExtension');
+const convertSize = require('../utils/convertSize');
 
 exports.getApp = async (req, res) => {
     const user = req.user;
@@ -51,14 +53,42 @@ exports.folderDeletePost = async (req, res) => {
     res.redirect('/');
 };
 
-exports.uploadAddGet = (req, res) => {
+exports.uploadAddGet = async (req, res) => {
+    const folders = await db.getFolders(req.user.id);
     res.render('upload', {
-        title: 'File Upload'
+        title: 'File Upload',
+        folders: folders
     });
 };
 
-exports.uploadAddPost = (req, res) => {
+exports.uploadAddPost = async (req, res) => {
     console.log('file uploaded...', req.file);
+    const fileName = stripExtension(req.file.originalname);
+    const fileSize = convertSize(req.file.size);
+    const fileFolder = req.body.folder;
+    
+    async function folderIsRoot(fileFolder) {
+        if (fileFolder === 'root') {
+            const folder = await db.getRootFolder(req.user.id);
+            console.log('Got root folder...', folder);
+            return folder.id;
+        } else {
+            console.log('Folder is not root...', fileFolder)
+            return fileFolder;
+        }
+    };
+
+    const folderId = await folderIsRoot(fileFolder);
+
+    const file = {
+        name: fileName,
+        size: fileSize,
+        fileType: req.file.mimetype,
+        ownerId: req.user.id,
+        folderId: folderId
+    };
+
+    await db.addFile(file);
     res.redirect('/');
 };
 

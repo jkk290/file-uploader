@@ -38,13 +38,46 @@ async function getFolderById(id) {
     return folder;
 };
 
-async function addFolder(folder) {
-    await prisma.folder.create({
-        data: {
-            name: folder.name,
-            ownerId: folder.ownerId
+async function getRootFolder(ownerId) {
+    const rootFolder = await prisma.folder.findFirst({
+        where: {
+            ownerId: ownerId,
+            isRoot: true
         }
     });
+
+    if (rootFolder === null) {
+        const folder = {
+            name: 'root',
+            ownerId: ownerId,
+            isRoot: true
+        };
+        await addFolder(folder);
+
+        return await getRootFolder(ownerId);
+    } else {
+        return rootFolder;
+    }
+};
+
+async function addFolder(folder) {
+    if (folder.isRoot) {
+        await prisma.folder.create({
+            data: {
+                name: folder.name,
+                ownerId: folder.ownerId,
+                isRoot: folder.isRoot
+            }
+        });
+    } else {
+        await prisma.folder.create({
+            data: {
+                name: folder.name,
+                ownerId: folder.ownerId
+            }
+        });
+    };
+    
 };
 
 async function editFolder(id, folderName) {
@@ -88,9 +121,9 @@ async function addFile(file) {
         data: {
             name: file.name,
             size: file.size,
-            fileType: file.type,
-            ownerId: file.user,
-            folderId: file.folder
+            fileType: file.fileType,
+            ownerId: file.ownerId,
+            folderId: file.folderId
         }
     });
 };
@@ -119,6 +152,7 @@ module.exports = {
     getUserById,
     getFolders,
     getFolderById,
+    getRootFolder,
     addFolder,
     editFolder,
     deleteFolder,

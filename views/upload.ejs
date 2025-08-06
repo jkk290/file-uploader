@@ -9,6 +9,16 @@
     <a href="/">Back</a>
     <h1><%= title %></h1>
     <form action="/upload/add" method="post" enctype="multipart/form-data">
+        <label for="folder">Folder: </label>
+        <select name="folder" id="folder">
+            <option value="root">None</option>
+            <% folders.forEach(folder => { %>
+                <% if (!folder.isRoot) { %>
+                    <option value="<%= folder.id %>"><%= folder.name %></option>
+                <% } %>                 
+            <% }) %>
+        </select>
+        <br>
         <input type="file" name="file" />
         <button type="submit">Upload</button>
     </form>

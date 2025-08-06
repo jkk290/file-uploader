@@ -49,11 +49,11 @@ model Folder {
 model File {
   id Int @id @default(autoincrement())
   name String @db.VarChar(255)
-  size Int
+  size String
   fileType String
-  filePath String
+  filePath String?
   createdAt DateTime @default(now())
-  modifiedAt DateTime @updatedAt
+  modifiedAt DateTime? @updatedAt
   owner User @relation(fields: [ownerId], references: [id])
   ownerId Int
   folder Folder @relation(fields: [folderId], references: [id])
