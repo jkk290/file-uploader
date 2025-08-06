@@ -1,6 +1,5 @@
 const passport = require("passport");
 const db = require('../storages/queries');
-const { folder } = require("../storages/prisma");
 
 exports.getApp = async (req, res) => {
     const user = req.user;
@@ -59,7 +58,8 @@ exports.uploadAddGet = (req, res) => {
 };
 
 exports.uploadAddPost = (req, res) => {
-  res.redirect('/');
+    console.log('file uploaded...', req.file);
+    res.redirect('/');
 };
 
 exports.loginPost = passport.authenticate('local', {

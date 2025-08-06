@@ -66,6 +66,54 @@ async function deleteFolder(id) {
     });
 };
 
+async function getUserFiles(userId) {
+    const files = await prisma.file.findMany({
+        where: {
+            ownerId: userId
+        }
+    });
+    return files;
+};
+
+async function getFileById(id) {
+    const file = await prisma.file.findUnique({
+        where: {
+            id: id
+        }
+    });
+};
+
+async function addFile(file) {
+    await prisma.file.create({
+        data: {
+            name: file.name,
+            size: file.size,
+            fileType: file.type,
+            ownerId: file.user,
+            folderId: file.folder
+        }
+    });
+};
+
+async function editFile(id, fileName) {
+    await prisma.file.update({
+        where: {
+            id: id
+        },
+        data: {
+            name: fileName
+        }
+    });
+};
+
+async function deleteFile(id) {
+    await prisma.file.delete({
+        where: {
+            id: id
+        }
+    });
+};
+
 module.exports = {
     getUser,
     getUserById,
@@ -73,5 +121,10 @@ module.exports = {
     getFolderById,
     addFolder,
     editFolder,
-    deleteFolder
+    deleteFolder,
+    getUserFiles,
+    getFileById,
+    addFile,
+    editFile,
+    deleteFile
 };
