@@ -7,6 +7,7 @@ const appController = require('../controllers/appController');
 const appRouter = Router();
 
 appRouter.get('/login', appController.loginGet);
+appRouter.get('/signup', appController.signupGet);
 appRouter.get('/upload/add', checkAuth, appController.uploadAddGet);
 appRouter.get('/folder/add', checkAuth, appController.folderAddGet);
 appRouter.get('/folder/:id/edit', checkAuth, appController.folderEditGet);
@@ -20,6 +21,7 @@ appRouter.post('/file/:id/edit', checkAuth, appController.fileEditPost);
 appRouter.post('/file/:id/delete', checkAuth, appController.fileDeletePost);
 appRouter.post('/folder/add', checkAuth, appController.folderAddPost);
 appRouter.post('/login', appController.loginPost);
+appRouter.post('/signup', appController.signupPost);
 appRouter.post('/upload/add', checkAuth, upload.single('file'), appController.uploadAddPost);
 appRouter.post('/logout', appController.logoutPost);
 appRouter.get('/', checkAuth, appController.getApp);

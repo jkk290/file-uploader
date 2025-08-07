@@ -1,8 +1,30 @@
 const passport = require("passport");
 const db = require('../storages/queries');
 const supabase = require('../storages/supabase');
+const bcrypt = require('bcryptjs');
+const { body, validationResult } = require('express-validator');
 const convertSize = require('../utils/convertSize');
-const { file } = require("../storages/prisma");
+
+const emailErr = 'Email must be in email format, example@domain.com.';
+const passwordLengthErr = 'Password must be at least 8 characters long.';
+const passwordContainsErr = 'Password must contain at least one uppercase letter, one lowercase letter, and number or special character (!@#$%^&*)';
+const passwordConfirmErr = 'Passwords do not match.'; 
+
+const validateUser = [
+    body('email').trim()
+    .isEmail().withMessage(emailErr),
+    body('password').trim()
+    .isLength({ min: 8 }).withMessage(passwordLengthErr),
+    body('password').trim()
+    .matches(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*])[A-Za-z\d!@#$%^&*]{8,}$/).withMessage(passwordContainsErr),
+    body('confirmPassword').trim()
+    .custom((value, {req}) => {
+        if (value !== req.body.password) {
+            throw new Error(passwordConfirmErr);
+        }
+        return true;
+    }).withMessage(passwordConfirmErr)
+];
 
 exports.getApp = async (req, res) => {
     const user = req.user;
@@ -20,6 +42,40 @@ exports.loginGet = (req, res) => {
         title: 'Log in'
     });
 };
+
+exports.signupGet = (req, res) => {
+    res.render('signup', {
+        title: 'Sign up'
+    });
+};
+
+exports.signupPost = [
+    validateUser,
+    async (req, res) => {
+        const errors = validationResult(req);
+
+        if (!errors.isEmpty()) {
+            return res.status(400).render('signup', {
+                title: 'Sign up',
+                errors: errors.array(),
+            });
+        }
+
+        try {
+            const hashedPassword = await bcrypt.hash(req.body.password, 10);
+            const user = {
+                firstName: req.body.firstName,
+                lastName: req.body.lastName,
+                email: req.body.email,
+                password: hashedPassword
+            };
+            db.addUser(user);
+            res.redirect('/login');
+        } catch (error) {
+            return next(error);
+        };
+    }
+];
 
 exports.folderGet = async (req, res) => {
     const folderId = parseInt(req.params.id);

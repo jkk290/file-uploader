@@ -1,5 +1,16 @@
 const prisma = require('./prisma');
 
+async function addUser(user) {
+    await prisma.user.create({
+        data: {
+            firstName: user.firstName,
+            lastName: user.lastName,
+            email: user.email,
+            password: user.password
+        }
+    });
+};
+
 async function getUser(email) {
     const user = await prisma.user.findUnique({
         where: {
@@ -171,6 +182,7 @@ async function deleteFile(id) {
 };
 
 module.exports = {
+    addUser,
     getUser,
     getUserById,
     getFolders,
