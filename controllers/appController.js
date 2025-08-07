@@ -1,7 +1,8 @@
 const passport = require("passport");
 const db = require('../storages/queries');
-const stripExtension = require('../utils/stripExtension');
+const supabase = require('../storages/supabase');
 const convertSize = require('../utils/convertSize');
+const { file } = require("../storages/prisma");
 
 exports.getApp = async (req, res) => {
     const user = req.user;
@@ -61,6 +62,24 @@ exports.folderEditPost = async (req, res) => {
 }
 
 exports.folderDeletePost = async (req, res) => {
+    const files = await db.getFilesByFolder(parseInt(req.params.id));
+    const paths = [];
+    files.forEach(file => {
+        paths.push(file.filePath);
+    });
+    try {
+        const { data, error } = await supabase
+            .storage
+            .from('uploads')
+            .remove(paths);
+        if (error) {
+            console.error(error)
+        }
+        console.log(data);
+    } catch (error) {
+        console.error(error)
+    }
+
     await db.deleteFolder(parseInt(req.params.id));
     res.redirect('/');
 };
@@ -75,7 +94,27 @@ exports.uploadAddGet = async (req, res) => {
 
 exports.uploadAddPost = async (req, res) => {
     console.log('file uploaded...', req.file);
-    const fileName = stripExtension(req.file.originalname);
+    let folderPath;
+
+    try {
+        const { data, error } = await supabase
+            .storage
+            .from('uploads')
+            .upload(`public/${req.file.originalname}`, req.file.buffer, {
+                cacheControl: '3600',
+                upsert: false
+            });
+
+        if (error) {
+            console.error(error);
+        } else {
+            folderPath = data.path;
+            console.log(data);
+        }
+    } catch (error) {
+        console.error(error);
+    };  
+
     const fileSize = convertSize(req.file.size);
     const fileFolder = req.body.folder;
     
@@ -93,11 +132,12 @@ exports.uploadAddPost = async (req, res) => {
     const folderId = await folderIsRoot(fileFolder);
 
     const file = {
-        name: fileName,
+        name: req.file.originalname,
         size: fileSize,
         fileType: req.file.mimetype,
         ownerId: req.user.id,
-        folderId: folderId
+        folderId: folderId,
+        filePath: folderPath
     };
 
     await db.addFile(file);
@@ -120,6 +160,31 @@ exports.fileEditGet = async (req, res) => {
     });
 };
 
+exports.fileDownloadGet = async (req, res) => {
+    const file = await db.getFileById(parseInt(req.params.id));
+
+    try {
+        const { data, error } = await supabase.storage.from('uploads').download(file.filePath)
+
+        if (error) {
+            console.error(error);
+        } 
+
+        const buffer = await data.arrayBuffer();
+
+        res.set({
+            'Content-Type': data.type || 'application/octet-stream',
+            'Content-Disposition': `attachment; filename="${file.name || 'download'}"`,
+            'Content-Length': buffer.byteLength
+        });
+
+        res.send(Buffer.from(buffer));
+
+    } catch (error) {
+        console.error(error);
+    };
+};
+
 exports.fileEditPost = async (req, res) => {
     const fileName = req.body.fileName;
     await db.editFile(parseInt(req.params.id), fileName);
@@ -127,6 +192,19 @@ exports.fileEditPost = async (req, res) => {
 };
 
 exports.fileDeletePost = async (req, res) => {
+    const file = await db.getFileById(parseInt(req.params.id));
+    try {
+        const { data, error } = await supabase
+            .storage
+            .from('uploads')
+            .remove([file.filePath]);
+        if (error) {
+            console.error(error)
+        }
+        console.log(data);
+    } catch (error) {
+        console.error(error)
+    }
     await db.deleteFile(parseInt(req.params.id));
     res.redirect('/');
 };

@@ -11,6 +11,11 @@
     <p>Size: <%= file.size %></p>
     <p>Type: <%= file.fileType %></p>
     <p>Uploaded at: <%= file.createdAt %></p>
+    <% if (file.filePath) { %>
+        <form action="/file/<%= file.id %>/download" method="get">
+            <button type="submit">Download</button>
+        </form>
+    <% } %>
     <form action="/file/<%= file.id %>/edit" method="get">
         <button type="submit">Rename</button>
     </form>

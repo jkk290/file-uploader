@@ -145,7 +145,8 @@ async function addFile(file) {
             size: file.size,
             fileType: file.fileType,
             ownerId: file.ownerId,
-            folderId: file.folderId
+            folderId: file.folderId,
+            filePath: file.filePath
         }
     });
 };
